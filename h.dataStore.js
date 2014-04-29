@@ -10128,6 +10128,9 @@ return jQuery;
         }
 
         function loadEntity(id, callback) {
+            if (!id) {
+                throw new Error('No Entity ID');
+            }
             doHttpRequest(storeUrl + storeName + id, 'GET', undefined,
                 function (entityData) {
                     var entity = new Entity(entityData.Data, entityData.Meta);
@@ -10141,6 +10144,9 @@ return jQuery;
 
         function saveEntity(entity, callback) {
             /// <param name='entity' type='Entity' />
+            if (!entity) {
+                throw new Error('No Entity to save');
+            }
             doHttpRequest(storeUrl + storeName, 'PUT', entity,
                 function (id) {
                     entity.Id = id;
@@ -10152,6 +10158,9 @@ return jQuery;
         }
 
         function queryMetaData(query, callback) {
+            if (!query) {
+                throw new Error('No query provided');
+            }
             doHttpRequest(storeUrl + 'meta/' + storeName + '?' + query, 'GET', undefined,
                 function (queryResult) {
                     doCallback(callback, [new OperationResult(true, null, queryResult)]);
@@ -10162,6 +10171,9 @@ return jQuery;
         }
 
         function queryData(query, callback) {
+            if (!query) {
+                throw new Error('No query provided');
+            }
             doHttpRequest(storeUrl + storeName + '?' + query, 'GET', undefined,
                 function (queryResult) {
                     doCallback(callback, [new OperationResult(true, null, queryResult)]);
@@ -10195,7 +10207,9 @@ return jQuery;
         chainBy: chainOperation,
         is: operator,
         OperationResult: OperationResult,
-        Query: Query
+        Query: Query,
+        queryWithAnd: function () { return new Query(chainOperation.And); },
+        queryWithOr: function () { return new Query(chainOperation.Or); }
     };
     if (!this.ds) {
         this.ds = this.H.DataStore;
