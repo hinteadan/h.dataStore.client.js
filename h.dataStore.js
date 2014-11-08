@@ -37,12 +37,14 @@
             parameters = [];
 
         function Parameter(name, operator, value) {
-            var isNegated = false;
+            var self = this,
+                isNegated = false;
             this.name = name;
             this.operator = operator;
             this.value = value;
             this.not = function () {
                 isNegated = !isNegated;
+                return self;
             };
             this.toString = function () {
                 return name + '=' + (isNegated ? '!' : '') + operator.value + ':' + value;
@@ -58,6 +60,15 @@
             };
         }
 
+        function addNegatedparameter(name) {
+            return function (operator) {
+                return function (value) {
+                    parameters.push(new Parameter(name, operator, value).not());
+                    return self;
+                };
+            };
+        }
+
         function convertToQueryString() {
             return 'chainWith=' + chain.value + '&' +
                 map(parameters, function (p) {
@@ -67,6 +78,7 @@
         }
 
         this.where = addParameter;
+        this.whereNot = addNegatedparameter;
         this.toString = convertToQueryString;
     }
 
