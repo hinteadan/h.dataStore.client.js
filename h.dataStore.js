@@ -10281,10 +10281,78 @@ return jQuery;
     	this.UploadUrl = generateUploadUrl;
     }
 
+    function HttpValidateStore(url)
+    {
+        var storeUrl = (url || 'http://localhost/HttpDataStore/') + 'validate/';
+
+        function doCallback(callback, argsArray) {
+            if (typeof (callback) !== 'function') {
+                return;
+            }
+            callback.apply(null, argsArray);
+        }
+
+        function queueForValidation(entity, storeName, clientId, callback){
+            var promiseToDoThis = callback;
+
+            $.ajax(storeUrl + '?storeName=' + storeName + '&clientId=' + clientId, {
+                accepts: {
+                    json: 'application/json'
+                },
+                contentType: 'application/json',
+                processData: false,
+                data: JSON.stringify(entity),
+                error: function (jqXHR, textStatus, errorThrown) {
+                    doCallback(promiseToDoThis, [new OperationResult(false, errorThrown)]);
+                },
+                success: function (validationToken) {
+                    doCallback(promiseToDoThis, [new OperationResult(true, null, validationToken)]);
+                },
+                type: 'PUT'
+            });
+
+            return {
+                then: function (doThis) {
+                    promiseToDoThis = doThis;
+                }
+            };
+        }
+
+        function validate(validationToken, clientId){
+            var promiseToDoThis = callback;
+
+            $.ajax(storeUrl + '?clientId=' + clientId + '&validationToken=' + validationToken, {
+                accepts: {
+                    json: 'application/json'
+                },
+                contentType: 'application/json',
+                processData: false,
+                data: null,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    doCallback(promiseToDoThis, [new OperationResult(false, errorThrown)]);
+                },
+                success: function (entityData) {
+                    doCallback(promiseToDoThis, [new OperationResult(true, null, Entity.fromDto(entityData))]);
+                },
+                type: 'POST'
+            });
+
+            return {
+                then: function (doThis) {
+                    promiseToDoThis = doThis;
+                }
+            };
+        }
+
+        this.QueueForValidation = queueForValidation;
+        this.Validate = validate;
+    }
+
     this.H = this.H || {};
     this.H.DataStore = {
     	Store: HttpDataStore,
 		BlobStore: HttpBlobStore,
+        Validation: HttpValidateStore,
         Entity: Entity,
         chainBy: chainOperation,
         is: operator,
