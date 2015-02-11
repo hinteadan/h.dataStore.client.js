@@ -10318,7 +10318,7 @@ return jQuery;
             };
         }
 
-        function validate(validationToken, clientId){
+        function validate(validationToken, clientId, callback){
             var promiseToDoThis = callback;
 
             $.ajax(storeUrl + '?clientId=' + clientId + '&validationToken=' + validationToken, {
