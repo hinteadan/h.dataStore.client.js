@@ -2824,10 +2824,6 @@
         throw new Error('Jquery with signalR is required to run the H DataStore Real-time API');
     }
 
-    if (!$.connection.entityHub) {
-        throw new Error('The current backend does not support Real-time API. Make sure the latest version is deployed.');
-    }
-
     function RealtimeApi(hubServer) {
 
         var handler = {
