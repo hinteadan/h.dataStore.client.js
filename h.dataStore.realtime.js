@@ -2901,7 +2901,18 @@
             });
         }
 
+        function loadHubs() {
+            if (loadHubs.called) {
+                return;
+            }
+
+            $('body').append('<script src="' + storeUrl + rootPath + '/hubs" type="text/javascript"></script>');
+
+            loadHubs.called = true;
+        }
+
         function tryInitialize() {
+            loadHubs();
             if (areHubsLoaded()) {
                 retryIn = 500;
                 initialize();
@@ -2917,13 +2928,15 @@
             retryIn *= Math.floor(retryCount / 3) || 1;
             delay(tryInitialize, retryIn);
         }
-        tryInitialize();
 
         this.isAvailable = function () {
             return Boolean(realtimeApi);
         };
 
         this.bind = function () {
+
+            tryInitialize();
+
             return {
                 then: function (doThis) {
                     if (typeof (doThis) !== 'function') {
