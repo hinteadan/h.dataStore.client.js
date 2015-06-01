@@ -2944,7 +2944,8 @@
     this.H = this.H || {};
     this.H.DataStore = this.H.DataStore || {};
     this.H.DataStore.Realtime = {
-        Service: RealtimeService
+        Service: RealtimeService,
+        Api: RealtimeApi
     };
 
 }).call(this, this.$, this.setTimeout);
